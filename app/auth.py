@@ -9,8 +9,11 @@ from sqlalchemy.orm import Session
 from app.models import User
 from app.database import get_db
 import app.schemas as schemas
+import os
 
-SECRET_KEY = "your-secret-key"  # Remplacez par votre propre clé secrète
+SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable not set")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
