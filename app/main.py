@@ -3,8 +3,10 @@ import os
 import logging
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-from app.database import Base, engine
+from app.database import Base
 from app.routes import auth_routes, variable_routes, category_routes, admin_routes
 
 # Charger les variables d'environnement
@@ -26,12 +28,30 @@ logger.info("Début du chargement de la configuration")
 
 app = FastAPI()
 
+# Configuration de la base de données (remplacer 'postgresql' par 'mysql+pymysql')
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable not set")
+
+# Utiliser create_engine avec l'option pool_pre_ping=True pour vérifier la connexion avant chaque utilisation
+engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
 # Crée les tables si elles n'existent pas
 try:
     Base.metadata.create_all(bind=engine)
     logger.info("Création des tables réussie")
 except Exception as e:
     logger.error(f"Erreur lors de la création des tables : {e}")
+
 
 # Inclure les routeurs
 for router_module, prefix, tag in [
@@ -46,6 +66,10 @@ for router_module, prefix, tag in [
     except Exception as e:
         logger.error(f"Erreur lors du chargement du routeur {tag} : {e}")
         raise  # Lever une exception pour arrêter le démarrage
+
+# Initialisation de la base de données (après l'inclusion des routeurs)
+from app.initial_data import init_db  # Importer votre script d'initialisation
+init_db(engine)
 
 @app.get("/", response_model=dict)
 async def root() -> dict:

@@ -10,3 +10,4 @@ httpx
 pytest
 fastapi-cache2
 aioredis
+python-dotenv
