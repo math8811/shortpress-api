@@ -5,7 +5,7 @@ from datetime import datetime
 
 from app.schemas import Variable, VariableCreate, VariableUpdate
 from app.models import Variable as VariableModel, User
-from app.auth import get_current_active_user, get_current_active_admin
+from app.auth import get_currentt_active_user, get_current_active_admin
 from app.database import get_db
 from app.utils import resolve_nested_variables
 
@@ -17,7 +17,7 @@ async def read_variables(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),  
+    current_user: User = Depends(get_currentt_active_user),  
 ):
     if current_user.is_admin:
         variables = db.query(VariableModel).offset(skip).limit(limit).all()
@@ -35,7 +35,7 @@ async def read_variables(
 async def read_variable(
     variable_id: int, 
     db: Session = Depends(get_db), 
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_currentt_active_user)
 ):
     variable = db.query(VariableModel).filter(VariableModel.id == variable_id).first()
     if variable is None:
@@ -54,7 +54,7 @@ async def read_variable(
 async def read_resolved_variable(
     variable_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_currentt_active_user)
 ):
     variable = db.query(VariableModel).filter(VariableModel.id == variable_id).first()
     if variable is None:
@@ -77,7 +77,7 @@ async def read_resolved_variable(
 async def read_resolved_variable_by_identifier(
     identifier: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_currentt_active_user)
 ):
     variable = db.query(VariableModel).filter(VariableModel.identifier == identifier).first()
     if variable is None:
@@ -99,7 +99,7 @@ async def read_resolved_variable_by_identifier(
 async def create_variable(
     variable: VariableCreate, 
     db: Session = Depends(get_db), 
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_currentt_active_user)
 ):
     if db.query(VariableModel).filter(VariableModel.identifier == variable.identifier, VariableModel.owner_id == current_user.id).first():
         raise HTTPException(status_code=400, detail="Variable identifier already exists")
@@ -118,7 +118,7 @@ async def update_variable(
     variable_id: int,
     variable: VariableUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_active_user)  
+    current_user: User = Depends(get_currentt_active_user)  
 ):
     db_variable = db.query(VariableModel).filter(VariableModel.id == variable_id).first()
     if db_variable is None:
@@ -138,7 +138,7 @@ async def update_variable(
 async def delete_variable(
     variable_id: int, 
     db: Session = Depends(get_db), 
-    current_user: User = Depends(get_current_active_user)  
+    current_user: User = Depends(get_currentt_active_user)  
 ):
     db_variable = db.query(VariableModel).filter(VariableModel.id == variable_id).first()
     if db_variable is None:
