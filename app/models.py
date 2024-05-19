@@ -1,5 +1,5 @@
 # models.py
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database import Base
@@ -10,7 +10,7 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     variables = relationship("Variable", back_populates="owner")
-    is_admin = Column(Boolean, default=False) 
+    is_admin = Column(Boolean, default=False)
 
 class Category(Base):
     __tablename__ = "categories"

@@ -2,42 +2,55 @@ import sys
 import os
 import logging
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.database import Base
+from app.core.config import settings # Ajout d'un fichier de configuration pour le titre du projet et les préfixes d'API
 from app.routes import auth_routes, variable_routes, category_routes, admin_routes
 
 # Charger les variables d'environnement
 load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY")
 
-if not SECRET_KEY:
+if not os.getenv("SECRET_KEY"):
     raise ValueError("SECRET_KEY environment variable not set")
-
-# Ajouter explicitement le répertoire parent au `PYTHONPATH`
-parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(parent_dir)
 
 # Configurer le logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-logger.info("Début du chargement de la configuration")
+# Création de l'application FastAPI
+app = FastAPI(
+    title=settings.PROJECT_NAME, 
+    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+)
 
-app = FastAPI()
+# Ajout de CORS pour permettre les requêtes cross-origin
+# (Ajustez les origines autorisées en fonction de vos besoins)
+origins = ["*"]  # Autoriser toutes les origines (à remplacer en production)
 
-# Configuration de la base de données (remplacer 'postgresql' par 'mysql+pymysql')
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  
+    allow_headers=["*"],  
+)
+
+
+# Configuration de la base de données (utiliser le dialecte MySQL)
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable not set")
-
-# Utiliser create_engine avec l'option pool_pre_ping=True pour vérifier la connexion avant chaque utilisation
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
+# Dépendance pour obtenir une session de base de données
 def get_db():
     db = SessionLocal()
     try:
@@ -45,32 +58,31 @@ def get_db():
     finally:
         db.close()
 
-# Crée les tables si elles n'existent pas
-try:
-    Base.metadata.create_all(bind=engine)
-    logger.info("Création des tables réussie")
-except Exception as e:
-    logger.error(f"Erreur lors de la création des tables : {e}")
 
+# Créer les tables de la base de données si elles n'existent pas
+Base.metadata.create_all(bind=engine)
 
 # Inclure les routeurs
-for router_module, prefix, tag in [
-    (auth_routes, "/auth", "auth"),
-    (variable_routes, "/variables", "variables"),
-    (category_routes, "/categories", "categories"),
-    (admin_routes, "/admin/categories", "admin"),
-]:
-    try:
-        app.include_router(router_module.router, prefix=prefix, tags=[tag])
-        logger.info(f"Routeur {tag} chargé avec succès")
-    except Exception as e:
-        logger.error(f"Erreur lors du chargement du routeur {tag} : {e}")
-        raise  # Lever une exception pour arrêter le démarrage
+app.include_router(auth_routes.router, prefix=settings.API_V1_STR + '/auth', tags=["auth"])
+app.include_router(variable_routes.router, prefix=settings.API_V1_STR + '/variables', tags=["variables"])
+app.include_router(category_routes.router, prefix=settings.API_V1_STR + '/categories', tags=["categories"])
+app.include_router(admin_routes.router, prefix=settings.API_V1_STR + '/admin/categories', tags=["admin"])
 
-# Initialisation de la base de données (après l'inclusion des routeurs)
+# Initialisation de la base de données
 from app.initial_data import init_db  # Importer votre script d'initialisation
 init_db(engine)
 
+
+# Gestion des erreurs 404
+@app.exception_handler(404)
+async def not_found_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=404,
+        content={"message": "Not Found"},
+    )
+
+
+# Route racine
 @app.get("/", response_model=dict)
 async def root() -> dict:
     return {"message": "Welcome to the ShortPress API"}
