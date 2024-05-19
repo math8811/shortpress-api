@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.database import Base
-from app.core.config import settings # Ajout d'un fichier de configuration pour le titre du projet et les préfixes d'API
+from app.config import settings # Ajout d'un fichier de configuration pour le titre du projet et les préfixes d'API
 from app.routes import auth_routes, variable_routes, category_routes, admin_routes
 
 # Charger les variables d'environnement
