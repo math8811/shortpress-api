@@ -86,3 +86,15 @@ async def not_found_exception_handler(request: Request, exc: Exception):
 @app.get("/", response_model=dict)
 async def root() -> dict:
     return {"message": "Welcome to the ShortPress API"}
+
+
+@app.get("/test_db")
+async def test_db(db: Session = Depends(get_db)):
+    try:
+        result = db.execute("SELECT 1")
+        if result.fetchone()[0] == 1:
+            return {"db_connection": "success"}
+        else:
+            return {"db_connection": "failed"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database connection error: {e}")
