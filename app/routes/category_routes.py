@@ -1,8 +1,9 @@
+#category_routes.py
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from app.auth import get_currentt_active_user, get_current_active_admin
+from app.auth import get_current_active_user, get_current_active_admin
 from app.database import get_db_session  # Utilisez la dépendance corrigée
 from app.models import Category as CategoryModel, User as UserModel 
 from app.schemas import Category, CategoryCreate, CategoryUpdate
@@ -11,7 +12,7 @@ router = APIRouter()
 
 # Créer une catégorie (POST)
 @router.post("/", response_model=Category)
-def create_category(category: CategoryCreate, db: Session = Depends(get_db), current_user: UserModel = Depends(get_currentt_active_user)):
+def create_category(category: CategoryCreate, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     db_category = CategoryModel(**category.dict(), owner_id=current_user.id)
     db.add(db_category)
     db.commit()
@@ -20,7 +21,7 @@ def create_category(category: CategoryCreate, db: Session = Depends(get_db), cur
 
 # Obtenir toutes les catégories (GET)
 @router.get("/", response_model=List[Category])
-def read_categories(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: UserModel = Depends(get_currentt_active_user)):
+def read_categories(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     if current_user.is_admin:
         categories = db.query(CategoryModel).offset(skip).limit(limit).all()
     else:
@@ -29,7 +30,7 @@ def read_categories(skip: int = 0, limit: int = 100, db: Session = Depends(get_d
 
 # Obtenir une catégorie par ID (GET)
 @router.get("/{category_id}", response_model=Category)
-def read_category(category_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_currentt_active_user)):
+def read_category(category_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     category = db.query(CategoryModel).filter(CategoryModel.id == category_id).first()
     if category is None:
         raise HTTPException(status_code=404, detail="Category not found")
@@ -39,7 +40,7 @@ def read_category(category_id: int, db: Session = Depends(get_db), current_user:
 
 # Mettre à jour une catégorie (PUT)
 @router.put("/{category_id}", response_model=Category)
-def update_category(category_id: int, category: CategoryUpdate, db: Session = Depends(get_db), current_user: UserModel = Depends(get_currentt_active_user)):
+def update_category(category_id: int, category: CategoryUpdate, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_user)):
     db_category = db.query(CategoryModel).filter(CategoryModel.id == category_id).first()
     if db_category is None:
         raise HTTPException(status_code=404, detail="Category not found")
