@@ -6,7 +6,7 @@ from datetime import datetime
 
 from app.schemas import Variable, VariableCreate, VariableUpdate
 from app.models import Variable as VariableModel, User
-from app.auth import get_current_active_user, get_current_active_admin
+from app.dependencies import get_current_active_user, get_current_active_admin
 from app.database import get_db
 from app.utils import resolve_nested_variables
 

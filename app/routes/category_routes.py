@@ -3,9 +3,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
-from app.auth import get_current_active_user, get_current_active_admin
+from app.dependencies import get_current_active_user, get_current_active_admin
 from app.database import get_db_session  # Utilisez la dépendance corrigée
-from app.models import Category as CategoryModel, User as UserModel 
+from app.models import Category as CategoryModel, User as UserModel, Variable as VariableModel
 from app.schemas import Category, CategoryCreate, CategoryUpdate
 
 router = APIRouter()
