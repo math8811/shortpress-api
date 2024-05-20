@@ -3,14 +3,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.auth import get_current_active_admin
-from app.database import get_db_session
+from app.database import get_db
 from app.models import Category as CategoryModel, User as UserModel
 from app.schemas import Category
 
 admin_router = APIRouter()
 
 @admin_router.get("/users/{user_id}/categories/", response_model=List[Category])
-def read_user_categories(user_id: int, db: Session = Depends(get_db_session), current_user: UserModel = Depends(get_current_active_admin)):
+def read_user_categories(user_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_admin)):
     """
     Récupère toutes les catégories appartenant à un utilisateur spécifique.
     
@@ -25,7 +25,7 @@ def read_user_categories(user_id: int, db: Session = Depends(get_db_session), cu
     return categories
 
 @admin_router.delete("/users/{user_id}/categories/", status_code=status.HTTP_204_NO_CONTENT)
-def delete_all_user_categories(user_id: int, db: Session = Depends(get_db_session), current_user: UserModel = Depends(get_current_active_admin)):
+def delete_all_user_categories(user_id: int, db: Session = Depends(get_db), current_user: UserModel = Depends(get_current_active_admin)):
     """
     Supprime toutes les catégories appartenant à un utilisateur spécifique.
 

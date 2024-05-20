@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_current_active_user, get_current_active_admin
-from app.database import get_db_session, get_db
+from app.database import get_db
 from app.models import Category as CategoryModel, User as UserModel
 from app.schemas import Category, CategoryCreate, CategoryUpdate, Variable
 
@@ -58,7 +58,7 @@ def delete_category(
     category_id: int, 
     action: str = Query(..., description="Action to take: 'delete' or 'reassign'"),
     new_category_id: int = Query(None, description="New category ID for reassignment (required if action is 'reassign')"),
-    db: Session = Depends(get_db_session)  # Changement ici
+    db: Session = Depends(get_db)  # Changement ici
 ):
     category = db.query(Category).filter(Category.id == category_id).first()
     if not category:
