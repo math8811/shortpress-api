@@ -2,12 +2,12 @@ import sys
 import os
 import logging
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response, Depends
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from app.database import Base
 from app.config import settings # Ajout d'un fichier de configuration pour le titre du projet et les préfixes d'API
