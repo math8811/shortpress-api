@@ -2,7 +2,7 @@
 fastapi
 uvicorn
 sqlalchemy
-pydantic==2.0.0
+pydantic
 passlib[bcrypt]
 python-jose
 alembic
