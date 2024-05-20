@@ -22,7 +22,7 @@ class User(BaseModel):
     is_admin: bool = Field(..., description="Indique si l'utilisateur est administrateur")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CategoryBase(BaseModel):
     name: str = Field(..., description="Nom de la catégorie")
@@ -39,7 +39,7 @@ class Category(CategoryBase):
     owner_id: int = Field(..., description="Identifiant de l'utilisateur propriétaire")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class VariableBase(BaseModel):
     name: str = Field(..., description="Nom de la variable")
@@ -65,9 +65,9 @@ class Variable(VariableBase):
     owner_id: int = Field(..., description="Identifiant de l'utilisateur propriétaire")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
         @staticmethod
-        def schema_extra(schema, model):
+        def json_schema_extra(schema, model):
             # Supprimer le champ "value" du schéma, car il est maintenant redondant avec "display_value"
             del schema["properties"]["value"]
