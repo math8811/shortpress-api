@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.dependencies import get_current_active_user, get_current_active_admin
 from app.database import get_db
 from app.models import Category as CategoryModel, User as UserModel
-from app.schemas import Category, CategoryCreate, CategoryUpdate, Variable
+from app.schemas import Category, CategoryCreate, Variable, CategoryUpdate
 
 router = APIRouter()
 

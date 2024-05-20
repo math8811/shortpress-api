@@ -30,6 +30,10 @@ class CategoryBase(BaseModel):
 class CategoryCreate(CategoryBase):
     pass
 
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = Field(None, description="Nom de la catégorie")
+
+
 class Category(CategoryBase):
     id: int = Field(..., description="Identifiant unique de la catégorie")
     owner_id: int = Field(..., description="Identifiant de l'utilisateur propriétaire")
