@@ -16,10 +16,14 @@
       "dest": "app/main.py"
     }
   ],
+  "overrides": {
+    "api/main.py": {
+      "buildCommand": "apt-get update && apt-get install -y libxml2-dev libxslt-dev"
+    }
+  },
   "build": {
     "env": {
       "RUSTFLAGS": "--cfg=web_sys_unstable_apis"
-    },
-    "installCommand": "apt-get update && apt-get install -y libxml2-dev libxslt-dev"  
+    }
   }
 }
