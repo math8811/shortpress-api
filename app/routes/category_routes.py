@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from app.dependencies import get_current_active_user, get_current_active_admin
-from app.database import get_db_session  # Utilisez la dépendance corrigée
-from app.models import Category as CategoryModel, User as UserModel, Variable as VariableModel
-from app.schemas import Category, CategoryCreate, CategoryUpdate
+from app.database import get_db_session, get_db
+from app.models import Category as CategoryModel, User as UserModel
+from app.schemas import Category, CategoryCreate, CategoryUpdate, Variable
 
 router = APIRouter()
 

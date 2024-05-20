@@ -21,7 +21,7 @@ def resolve_nested_variables(variable_value: str, db: Session) -> str:
         referenced_variable = db.query(Variable).filter(Variable.name == match).first()
         if referenced_variable:
             resolved_value = resolve_nested_variables(referenced_variable.value, db)
-            variable_value = variable_value.replace(f"{{{{{match}}}}", resolved_value)
+            variable_value = variable_value.replace(f"{{{{{match}}}}}", resolved_value)
         else:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Referenced variable '{match}' not found")
 
