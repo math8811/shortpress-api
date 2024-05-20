@@ -2,15 +2,23 @@
   "version": 2,
   "builds": [
     {
-      "src": "app/main.py", 
+      "src": "app/main.py",
       "use": "@vercel/python",
-      "config": { 
+      "config": {
         "maxLambdaSize": "15mb",
-        "runtime": "python3.9" 
+        "runtime": "python3.9"
       }
     }
   ],
   "routes": [
-    { "src": "/(.*)", "dest": "app/main.py" } 
-  ]
+    {
+      "src": "/(.*)",
+      "dest": "app/main.py"
+    }
+  ],
+  "build": {
+    "env": {
+      "RUSTFLAGS": "--cfg=web_sys_unstable_apis"
+    }
+  }
 }
