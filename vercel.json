@@ -6,7 +6,8 @@
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "15mb",
-        "runtime": "python3.9"
+        "runtime": "python3.9",
+        "install-command": "apt-get update && apt-get install -y libxml2-dev libxslt-dev && pip install -r requirements.txt"
       }
     }
   ],
@@ -15,8 +16,7 @@
   ],
   "build": {
     "env": {
-      "RUSTFLAGS": "--cfg=web_sys_unstable_apis",
-      "BUILD_COMMAND": "apt-get update && apt-get install -y libxml2-dev libxslt-dev"
+      "RUSTFLAGS": "--cfg=web_sys_unstable_apis"
     }
   }
 }
