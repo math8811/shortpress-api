@@ -7,7 +7,7 @@
       "config": {
         "maxLambdaSize": "15mb",
         "runtime": "python3.9",
-        "buildCommand": "./install-lxml-deps.sh && pip3 install -r requirements.txt"
+        "buildCommand": "./install-lxml-deps.sh && pip install -r requirements.txt"
       }
     }
   ],
