@@ -2,21 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "app/main.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "15mb",
-        "runtime": "python3.9",
-        "buildCommand": "./install-lxml-deps.sh && pip3 install -r requirements.txt"
-      }
+      "src": "Dockerfile",
+      "use": "@vercel/docker"
     }
   ],
   "routes": [
     { "src": "/(.*)", "dest": "app/main.py" }
   ],
-  "build": {
-    "env": {
-      "RUSTFLAGS": "--cfg=web_sys_unstable_apis"
-    }
+  "env": {
+    "RUSTFLAGS": "--cfg=web_sys_unstable_apis"
   }
 }
